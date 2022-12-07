@@ -4,23 +4,10 @@ private fun List<String>.isCommand(): Boolean = first() == "$"
 
 fun main() {
     fun part1(input: List<String>): Int {
-        val root: Node.Dir = Node.Root()
-        var current: Node.Dir = root
-        input.map { it.split(' ') }
-            .map { it.parse() }
-            .forEach { line ->
-                when (line) {
-                    is CdRoot -> current = root
-                    is CdUp -> current = current.parent
-                    is Cd -> current = current.getDir(line.name)
-                    is Dir -> current.append(line)
-                    is File -> current.append(line)
-                    is Ls -> {}
-                    is Command -> {}
-                    is Output -> {}
-                }
-            }
-        return root.getFoldersWithMaxSize(100000)
+        return createTree(input)
+            .getFolderSizes()
+            .filter { it <= 100000 }
+            .sum()
     }
 
     fun part2(input: List<String>): Int {
@@ -36,6 +23,26 @@ fun main() {
     val input = readInput("Day$day")
     println("part1=${part1(input)}")
     println("part2=${part2(input)}")
+}
+
+private fun createTree(input: List<String>): Node.Dir {
+    val root: Node.Dir = Node.Root()
+    var current: Node.Dir = root
+    input.map { it.split(' ') }
+        .map { it.parse() }
+        .forEach { line ->
+            when (line) {
+                is CdRoot -> current = root
+                is CdUp -> current = current.parent
+                is Cd -> current = current.getDir(line.name)
+                is Dir -> current.append(line)
+                is File -> current.append(line)
+                is Ls -> {}
+                is Command -> {}
+                is Output -> {}
+            }
+        }
+    return root
 }
 
 private fun List<String>.parse() =
@@ -90,6 +97,12 @@ private sealed interface Node {
         fun getDir(name: String) = content
             .filterIsInstance<Dir>()
             .first { it.name == name }
+
+        fun getFolderSizes(): List<Int> =
+            content
+                .filterIsInstance<Dir>()
+                .flatMap { it.getFolderSizes() } +
+                    content.sumOf { it.size }
 
         fun getFoldersWithMaxSize(maxSize: Int): Int {
             val sub: Int = content
