@@ -11,7 +11,12 @@ fun main() {
     }
 
     fun part2(input: List<String>): Int {
-        return 0
+        val tree = createTree(input)
+        val hasToFreeUp = tree.size - 40000000
+        return tree
+            .getFolderSizes()
+            .filter { it >= hasToFreeUp }
+            .min()
     }
 
     val day = "07"
