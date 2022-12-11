@@ -51,7 +51,6 @@ private fun <E> List<List<E>>.rotate(): List<List<E>> =
         }
     }
 
-private fun Boolean.toInt(): Int = if (this) 1 else 0
 
 private fun List<List<Int>>.isHorizontalVisible(): List<List<Boolean>> =
     map { it.visible() }
