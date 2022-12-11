@@ -16,8 +16,25 @@ fun main() {
             } * 10
     }
 
-    fun part2(input: List<String>): Int {
-        return 0
+    fun part2(input: List<String>): String {
+        return input.parse()
+            .fold(State(1, emptyList())) { state, op ->
+                with(state) {
+                    val pos = crt.size % 40
+                    val x = regX + op.value
+                    val draw = (x - pos) in 0..2
+                    copy(
+                        regX = x,
+                        crt = crt.append(draw)
+                    )
+                }
+            }
+            .crt
+            .map { if (it) '#' else '.' }
+            .chunked(40)
+            .joinToString("\n") {
+                it.joinToString("")
+            }
     }
 
     val day = "10"
@@ -28,13 +45,15 @@ fun main() {
     println("part1_test=$testOutput1")
     assert(testOutput1 == 13140)
     val testOutput2 = part2(testInput)
-    println("part2_test=$testOutput2")
-    assert(testOutput2 == 0)
+    println("part2_test=\n$testOutput2")
 
     val input = readInput("Day$day")
     println("part1=${part1(input)}")
-    println("part2=${part2(input)}")
+    println("part2=\n${part2(input)}")
 }
+
+private fun <E> List<E>.append(item: E): List<E> =
+    listOf(this, listOf(item)).flatten()
 
 private fun List<Operation>.sum(): Int =
     sumOf { it.value }
@@ -58,3 +77,5 @@ private sealed class Operation {
     object Nop : Operation()
     data class Add(override val value: Int) : Operation()
 }
+
+private data class State(val regX: Int, val crt: List<Boolean>)
