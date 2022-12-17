@@ -16,3 +16,9 @@ fun String.md5() = BigInteger(1, MessageDigest.getInstance("MD5").digest(toByteA
     .padStart(32, '0')
 
 fun Boolean.toInt(): Int = if (this) 1 else 0
+
+fun List<Boolean>.sum(): Int = sumOf { it.toInt() }
+
+fun List<String>.mapToInt() = map { it.toInt() }
+
+fun <A, B, T> Pair<A, B>.mapFirst(transform: (A) -> T): Pair<T, B> = Pair(transform(first), second)
