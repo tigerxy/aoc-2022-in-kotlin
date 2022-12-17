@@ -4,13 +4,28 @@ fun main() {
     fun part1(input: List<String>): Int =
         input
             .parseFile()
+            .map { Pair(it[0], it[1]) }
             .map { it.first < it.second }
             .mapIndexed { index, b ->
                 b.toInt() * (index + 1)
             }
             .sum()
 
-    fun part2(input: List<String>): Int = 0
+    fun part2(input: List<String>): Int {
+        val markers = listOf(2, 6)
+            .map { ListNode(listOf(ListNode(listOf(TreeNode.NumberNode(it))))) }
+
+        val parsedAndSortedInput = input
+            .parseFile()
+            .flatten()
+            .appendAll(markers)
+            .sortedWith(TreeNode::compareTo)
+
+        return markers
+            .map { parsedAndSortedInput.indexOf(it) }
+            .map { it + 1 }
+            .multiply()
+    }
 
     val day = "13"
 
@@ -28,15 +43,13 @@ fun main() {
     println("part2=${part2(input)}")
 }
 
-private fun List<String>.parseFile(): List<Pair<TreeNode, TreeNode>> {
-    return windowed(size = 2, step = 3)
+private fun List<String>.parseFile(): List<List<TreeNode>> =
+    windowed(size = 2, step = 3)
         .map {
             it
                 .map(::parse)
                 .map(Pair<TreeNode, String>::first)
         }
-        .map { Pair(it[0], it[1]) }
-}
 
 private fun parse(line: String): Pair<TreeNode, String> {
     val list = mutableListOf<TreeNode>()

@@ -52,9 +52,6 @@ fun main() {
     println("part2=\n${part2(input)}")
 }
 
-private fun <E> List<E>.append(item: E): List<E> =
-    listOf(this, listOf(item)).flatten()
-
 private fun List<Operation>.sum(): Int =
     sumOf { it.value }
 
